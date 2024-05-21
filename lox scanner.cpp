@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <Tokentype.h>
 
 class Lox
 {
@@ -17,7 +18,7 @@ public:
 
     void Lox::error(int line, std::string &message)
     {
-        report(line, "", message);
+        report(line, " ", message);
     }
 
     void Lox::main(const std::vector<std::string> &args)
@@ -80,10 +81,8 @@ private:
 
     void Lox::run(const std::string &source)
     {
-        // Example of token scanning process
+
         std::cout << "Running source: " << source << std::endl;
-        // For now, just print the source
     }
 };
 bool Lox::hadError = false;
-
