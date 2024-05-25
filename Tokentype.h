@@ -1,6 +1,7 @@
 // TokenType.h
-#ifndef TOKEN_TYPE_H
-#define TOKEN_TYPE_H
+//#ifndef TOKEN_TYPE_H
+//#define TOKEN_TYPE_H
+#pragma once
 
 enum class TokenType {
     // Single-character tokens.
@@ -23,4 +24,4 @@ enum class TokenType {
     END_OF_FILE
 };
 
-#endif // TOKEN_TYPE_H
+//#endif // TOKEN_TYPE_H
