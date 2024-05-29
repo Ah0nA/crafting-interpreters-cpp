@@ -219,7 +219,35 @@ private:
             addToken(match('=') ? TokenType::GREATER_EQUAL : TokenType::GREATER);
             break;
         case '/':
-            if (match('/'))
+            if (match('*'))
+            {
+                int nestedDepth = 1;
+                while(nestedDepth > 0 && !isAtEnd()){
+                    if(peek() == '\n'){
+                        line++; 
+                        advance();
+                    }
+                    else if(peek() == '/' && peekNext() == '*'){
+                        nestedDepth++;
+                        advance();
+                        advance();
+                    }else if(peek() == '*' && peekNext() == '/'){
+                        nestedDepth--;
+                        advance();
+                        advance();
+
+                    }else{
+                        advance();
+                    }
+                   
+                }
+                if(nestedDepth > 0){
+                     throw "Unterminated block comment" ;
+                }
+            }
+            
+      
+            else if (match('/'))
             {
                 while (peek() != '\n' && !isAtEnd())
                     advance();
@@ -339,7 +367,7 @@ private:
             advance();
         std::string text = source.substr(start, current - start);
         auto it = keywords.find(text);
-        TokenType type = (it != keywords.end()) ? it -> second : TokenType::IDENTIFIER;
+        TokenType type = (it != keywords.end()) ? it->second : TokenType::IDENTIFIER;
         addToken(type);
     }
 
