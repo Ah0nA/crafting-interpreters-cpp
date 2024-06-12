@@ -11,8 +11,6 @@ operator → "==" | "!=" | "<" | "<=" | ">" | ">="
  | "+" | "-" | "*" | "/" ;
 */
 
-
-
 #pragma once
 
 #include <memory>
@@ -68,9 +66,9 @@ public:
 class Literal : public Expr
 {
 public:
-    std::variant<std::monostate, std::string, double> value;
+    std::variant<std::monostate, std::string, double,bool> value;
 
-    Literal(std::variant<std::monostate, std::string, double> value) : value(value) {}
+    Literal(std::variant<std::monostate, std::string, double, bool> value) : value(value) {}
 
     void accept(Visitor *visitor) override
     {
@@ -78,15 +76,16 @@ public:
     }
 };
 
-class Unary : public Expr{
+class Unary : public Expr
+{
     Token op;
     std::shared_ptr<Expr> right;
 
-    Unary(std::shared_ptr<Expr> right, Token op) : right(right) ,
-    op(op){}
+    Unary(std::shared_ptr<Expr> right, Token op) : right(right),
+                                                   op(op) {}
 
-    void accept(Visitor *visitor) override{
-        visitor -> visitUnaryExpr(this);
+    void accept(Visitor *visitor) override
+    {
+        visitor->visitUnaryExpr(this);
     }
-
 };
