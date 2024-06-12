@@ -25,7 +25,53 @@ public:
 class Binary : public Expr
 {
 public:
-std::shared_ptr<Expr> left;
-Token op;
-std::shared_ptr<Expr> right;
+    std::shared_ptr<Expr> left;
+    Token op;
+    std::shared_ptr<Expr> right;
+
+    Binary(std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right) : left(left), op(op), right(right) {}
+
+    void accept(Visitor *visitor) override
+    {
+        visitor->visitBinaryExpr(this);
+    }
+};
+
+class Grouping : public Expr
+{
+public:
+    std::shared_ptr<Expr> expression;
+
+    Grouping(std::shared_ptr<Expr> expression)
+        : expression(expression) {}
+    void accept(Visitor *visitor) override
+    {
+        visitor->visitGroupingExpr(this);
+    }
+};
+
+class Literal : public Expr
+{
+public:
+    std::variant<std::monostate, std::string, double> value;
+
+    Literal(std::variant<std::monostate, std::string, double> value) : value(value) {}
+
+    void accept(Visitor *visitor) override
+    {
+        visitor->visitLiteralExpr(this);
+    }
+};
+
+class Unary : public Expr{
+    Token op;
+    std::shared_ptr<Expr> right;
+
+    Unary(std::shared_ptr<Expr> right, Token op) : right(right) ,
+    op(op){}
+
+    void accept(Visitor *visitor) override{
+        visitor -> visitUnaryExpr(this);
+    }
+
 };
