@@ -4,6 +4,23 @@
 #include <string>
 #include <sstream>
 
+/*class Visitor
+    {
+    public:
+        virtual void visitBinaryExpr(class Binary *expr) = 0;*/
+void defineVisitor(std::ofstream &writer, const std::string &baseName, const std::vector<std::string> &types)
+{
+    writer << "class Visitor\n{\n";
+    writer << "public:\n";
+
+    for (const auto type : types)
+    {
+        std::string typeName = type.substr(0, type.find(":"));
+        writer << "    virtual void visit" << typeName << baseName << "(class " << typeName << " *" << baseName << ") = 0;\n";
+    }
+    writer << "};\n\n";
+}
+
 // Function to generate a single AST node class
 void defineType(std::ofstream &writer, const std::string &baseName, const std::string &className, const std::string &fieldList)
 {
@@ -33,6 +50,16 @@ void defineType(std::ofstream &writer, const std::string &baseName, const std::s
         first = false;
     }
     writer << " {}\n";
+
+    /*void accept(Visitor *visitor) override
+    {
+        visitor->visitBinaryExpr(this);
+    }*/
+
+    writer << "   void accept(Visitor *visitor) const override {\n";
+    writer << "visitor -> visit" << className << className << "(this);";
+    writer << "}\n";
+
     writer << "};\n";
 }
 
@@ -42,8 +69,8 @@ void defineAst(const std::string &outputDir, const std::string &baseName, const 
     std::ofstream writer(path);
 
     writer << "#pragma once\n\n";
-    writer << "include <memory>\n";
-    writer << "include <variant>\n\n";
+    writer << "#include <memory>\n";
+    writer << "#include <variant>\n\n";
 
     writer << "class " << baseName << "{\n";
     writer << "public:\n";
@@ -58,6 +85,7 @@ void defineAst(const std::string &outputDir, const std::string &baseName, const 
         defineType(writer, baseName, className, fields);
         writer << "\n";
     }
+    defineVisitor(writer, baseName, types);
 
     writer.close();
 }
