@@ -16,7 +16,7 @@ void defineVisitor(std::ofstream &writer, const std::string &baseName, const std
     for (const auto type : types)
     {
         std::string typeName = type.substr(0, type.find(":"));
-        writer << "    virtual void visit" << typeName << baseName << "(class " << typeName << " *" << baseName << ") = 0;\n";
+        writer << "    virtual std::string visit" << typeName << baseName << "(class " << typeName << " *" << baseName << ") = 0;\n";
     }
     writer << "};\n\n";
 }
@@ -56,7 +56,7 @@ void defineType(std::ofstream &writer, const std::string &baseName, const std::s
         visitor->visitBinaryExpr(this);
     }*/
 
-    writer << "   void accept(Visitor *visitor) const override {\n";
+    writer << "   std::string accept(Visitor *visitor) const override {\n";
     writer << "visitor -> visit" << className << className << "(this);";
     writer << "}\n";
 
@@ -71,6 +71,8 @@ void defineAst(const std::string &outputDir, const std::string &baseName, const 
     writer << "#pragma once\n\n";
     writer << "#include <memory>\n";
     writer << "#include <variant>\n\n";
+    writer << "#include <Tokentype.h>\n";
+    writer << "#include <Token.h>\n";
 
     writer << "class " << baseName << "{\n";
     writer << "public:\n";
