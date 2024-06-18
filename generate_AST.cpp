@@ -57,7 +57,7 @@ void defineType(std::ofstream &writer, const std::string &baseName, const std::s
     }*/
 
     writer << "   std::string accept(Visitor *visitor) const override {\n";
-    writer << "visitor -> visit" << className << className << "(this);";
+    writer << "      return visitor -> visit" << className << baseName << "(this);";
     writer << "}\n";
 
     writer << "};\n";
@@ -77,6 +77,7 @@ void defineAst(const std::string &outputDir, const std::string &baseName, const 
     writer << "class " << baseName << "{\n";
     writer << "public:\n";
     writer << "    virtual ~" << baseName << "() = default;\n";
+    writer << "     virtual std::string accept(class Visitor *visitor) const =0;\n";
     writer << "};\n\n";
 
     //"Binary : std::shared_ptr<Expr> left, Token operator, std::shared_ptr<Expr> right"
@@ -90,6 +91,45 @@ void defineAst(const std::string &outputDir, const std::string &baseName, const 
     defineVisitor(writer, baseName, types);
 
     writer.close();
+
+
+// // Generate the AstPrinter class
+    std::string printerPath = outputDir + "/AstPrinter.h";
+    std::ofstream printerWriter(printerPath);
+
+    printerWriter << "#pragma once\n\n";
+    printerWriter << "#include <\"" << baseName << ".h\"\n";
+    printerWriter << "#include <sstream>\n";
+    printerWriter << "#include <memory>";
+
+    printerWriter << "class AstPrinter : public" << baseName << ":: Visitor \n {";
+    printerWriter << "    public: \n";
+
+    printerWriter << "    std::string print(const std::shared_ptr<" << baseName << ">& expr) {\n";
+    printerWriter << "       return expr->accept(this);\n";
+    printerWriter << "    }\n\n";
+
+    for (const auto &type : types)
+    {
+        std::string typeName = type.substr(0, type.find(':'));
+        printerWriter << "     std::string visit" << typeName << baseName << "(class " << typeName << " *expr) override {\n";
+        printerWriter << "         std::stringstream ss;\n";
+        printerWriter << "         ss << \"(\" << \"" << typeName << "\";\n";
+        std::istringstream fieldsStream(type.substr(type.find(':') + 1));
+        std::string field;
+
+        while (std::getline(fieldsStream, field, ','))
+        {
+            std::string fieldName = field.substr(field.find_last_of(' ') + 1);
+            printerWriter << "         ss << \" \" << expr->" << fieldName << ";\n";
+        }
+        printerWriter << "        ss << \")\";\n";
+        printerWriter << "        return ss.str();\n";
+        printerWriter << "    }\n\n";
+    }
+    printerWriter << "};\n";
+
+    printerWriter.close();
 }
 
 int main(int argc, char *argv[])
