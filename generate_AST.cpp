@@ -61,3 +61,18 @@ void defineAst(const std::string &outputDir, const std::string &baseName, const 
 
     writer.close();
 }
+
+int main(int argc, char *argv[])
+{
+    if (argc != 2)
+    {
+        std::cerr << "Usage: generate_ast <output directory>\n";
+        return 1;
+    }
+
+    std::string outputDir = argv[1];
+
+    defineAst(outputDir, "Expr", {"Binary : std::shared_ptr<Expr> left, Token operator, std::shared_ptr<Expr> right", "Grouping : std::shared_ptr<Expr> expression", "Literal : Object value", "Unary : Token operator, std::shared_ptr<Expr> right"
+
+                                 });
+}
