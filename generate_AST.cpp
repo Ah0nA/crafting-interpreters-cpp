@@ -93,7 +93,7 @@ void defineAst(const std::string &outputDir, const std::string &baseName, const 
     writer.close();
 
 
-// // Generate the AstPrinter class
+// Generate the AstPrinter class
     std::string printerPath = outputDir + "/AstPrinter.h";
     std::ofstream printerWriter(printerPath);
 
@@ -131,6 +131,9 @@ void defineAst(const std::string &outputDir, const std::string &baseName, const 
 
     printerWriter.close();
 }
+
+//Reverse Polish Notation Class
+
 
 int main(int argc, char *argv[])
 {
