@@ -1,9 +1,15 @@
 #include "Parser.h"
+#include "lox.h"
 #include <stdexcept>
 
 // tokens -> AST
 
-Parser::Parser(const std::vector<Token> &tokens) : tokens(tokens) {}
+class ParseError : public std::runtime_error
+{
+public:
+    ParseError(const std::string &message) : std::runtime_error(message) {}
+};
+Parser::Parser(const std::vector<Token> &tokens) : tokens(tokens), current(0) {}
 
 Token Parser::advance()
 {
@@ -33,15 +39,65 @@ Token Parser::consume(TokenType type, const std::string &message)
     {
         advance();
     }
-    throw error(peek(), message);
+    throw ParseError(reportError(peek(), message));
 }
 
-std::runtime_error Parser::error(const Token &token, const std::string &message){
-    std::string errorMessage = "Error at '" +token.lexeme + "': " + message;
-    return std::runtime_error(errorMessage); 
+void Parser::synchronize()
+{
+    advance();
+
+    while (!isAtEnd())
+    {
+        if (previous().type == TokenType::SEMICOLON)
+            return;
+
+        switch (peek().type)
+        {
+        case TokenType::CLASS:
+            /* code */
+            break;
+        case TokenType::FUN:
+            /* code */
+            break;
+        case TokenType::VAR:
+            /* code */
+            break;
+        case TokenType::FOR:
+            /* code */
+            break;
+        case TokenType::IF:
+            /* code */
+            break;
+        case TokenType::WHILE:
+            /* code */
+            break;
+        case TokenType::PRINT:
+            /* code */
+            break;
+        case TokenType::RETURN:
+            return;
+            break;
+
+        default:
+            break;
+        }
+        advance();
+    }
 }
 
-
+std::string Parser::reportError(const Token &token, const std::string &message)
+{
+    std::string errorMessage;
+    if (token.type == TokenType::END_OF_FILE)
+    {
+        errorMessage = token.line, "' Error at end'" + message;
+    }
+    else
+    {
+        errorMessage = token.line, "' Error at '" + token.lexeme + "' : " + message;
+    }
+    throw ParseError(errorMessage);
+}
 
 bool Parser::check(TokenType type)
 {
@@ -159,6 +215,19 @@ std::shared_ptr<Expr> Parser::primary()
     {
         auto expr = expression();
         consume(TokenType::RIGHT_PAREN, "Expect ')' after expression");
-        return std::make_shared<Grouping> (expr);
+        return std::make_shared<Grouping>(expr);
+    }
+    throw ParseError(reportError(peek(), "Unexpected Token"));
+}
+
+std::shared_ptr<Expr> Parser::parse()
+{
+    try
+    {
+        return expression();
+    }
+    catch (ParseError &error)
+    {
+        return nullptr;
     }
 }

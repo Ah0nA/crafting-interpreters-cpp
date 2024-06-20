@@ -24,8 +24,10 @@ private:
     bool isAtEnd();
     Token peek();
     Token previous();
+    void Parser::synchronize();
+    std::shared_ptr<Expr> Parser::parse();
     Token Parser::consume(TokenType type, const std::string &message);
-    std::runtime_error Parser::error(const Token &token, const std::string &message);
+    std::string Parser::reportError(const Token& token, const std::string& message);
     std::shared_ptr<Expr> comparision();
     std::shared_ptr<Expr> term();
     std::shared_ptr<Expr> factor();
