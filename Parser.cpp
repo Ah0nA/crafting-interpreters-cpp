@@ -1,5 +1,6 @@
 #include "Parser.h"
 
+
 // tokens -> AST
 
 Parser::Parser(const std::vector<Token> &tokens) : tokens(tokens) {}
@@ -26,14 +27,19 @@ Token Parser::previous()
     return tokens[current - 1];
 }
 
-bool Parser::check(TokenType type){
-    if(isAtEnd) return false;
+bool Parser::check(TokenType type)
+{
+    if (isAtEnd)
+        return false;
     return peek().type == type;
 }
 
-bool Parser::match(const std::vector<TokenType> &types){
-    for(TokenType type: types){
-        if(check(type)){
+bool Parser::match(const std::vector<TokenType> &types)
+{
+    for (TokenType type : types)
+    {
+        if (check(type))
+        {
             advance();
             return true;
         }
@@ -54,7 +60,9 @@ std::shared_ptr<Expr> Parser::equality()
 
     while (match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL}))
     {
-
+        Token op = previous();
+        auto right = comparision();
+        expr = std::make_shared<Binary>(expr , op, right);
     }
+    return expr;
 }
-
