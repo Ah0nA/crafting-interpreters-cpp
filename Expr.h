@@ -30,7 +30,7 @@ public:
         virtual void visitUnaryExpr(class Unary *expr) = 0;
     };
 
-    virtual void accept(Visitor *visitor) = 0;
+    virtual std::variant<std::monostate, double, bool, std::string> accept(Visitor *visitor) = 0;
 
     virtual ~Expr() = default;
 };
@@ -44,7 +44,7 @@ public:
 
     Binary(std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right) : left(left), op(op), right(right) {}
 
-    void accept(Visitor *visitor) override
+    std::variant<std::monostate, double , bool, std::string> accept(Visitor *visitor) override
     {
         visitor->visitBinaryExpr(this);
     }
@@ -57,7 +57,7 @@ public:
 
     Grouping(std::shared_ptr<Expr> expression)
         : expression(expression) {}
-    void accept(Visitor *visitor) override
+    std::variant<std::monostate, double, bool, std::string> accept(Visitor *visitor) override
     {
         visitor->visitGroupingExpr(this);
     }
@@ -70,7 +70,7 @@ public:
 
     Literal(std::variant<std::monostate, std::string, double, bool> value) : value(value) {}
 
-    void accept(Visitor *visitor) override
+    std::variant<std::monostate, double, bool, std::string> accept(Visitor *visitor) override
     {
         visitor->visitLiteralExpr(this);
     }
@@ -84,7 +84,7 @@ class Unary : public Expr
     Unary(std::shared_ptr<Expr> right, Token op) : right(right),
                                                    op(op) {}
 
-    void accept(Visitor *visitor) override
+    std::variant<std::monostate, double, bool, std::string> accept(Visitor *visitor) override
     {
         visitor->visitUnaryExpr(this);
     }
