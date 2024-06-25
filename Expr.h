@@ -15,8 +15,7 @@ operator → "==" | "!=" | "<" | "<=" | ">" | ">="
 
 #include <memory>
 #include <variant>
-#include <Tokentype.h>
-#include <Token.h>
+#include "Token.h"
 
 class Expr
 {
@@ -24,10 +23,10 @@ public:
     class Visitor
     {
     public:
-        virtual void visitBinaryExpr(class Binary *expr) = 0;
-        virtual void visitGroupingExpr(class Grouping *expr) = 0;
-        virtual void visitLiteralExpr(class Literal *expr) = 0;
-        virtual void visitUnaryExpr(class Unary *expr) = 0;
+        virtual std::variant<std::monostate, double, bool, std::string> visitBinaryExpr(class Binary *expr) = 0;
+        virtual std::variant<std::monostate, double, bool, std::string> visitGroupingExpr(class Grouping *expr) = 0;
+        virtual std::variant<std::monostate, double, bool, std::string> visitLiteralExpr(class Literal *expr) = 0;
+        virtual std::variant<std::monostate, double, bool, std::string> visitUnaryExpr(class Unary *expr) = 0;
     };
 
     virtual std::variant<std::monostate, double, bool, std::string> accept(Visitor *visitor) = 0;
@@ -44,9 +43,9 @@ public:
 
     Binary(std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right) : left(left), op(op), right(right) {}
 
-    std::variant<std::monostate, double , bool, std::string> accept(Visitor *visitor) override
+    std::variant<std::monostate, double, bool, std::string> accept(Visitor *visitor) override
     {
-        visitor->visitBinaryExpr(this);
+        return visitor->visitBinaryExpr(this);
     }
 };
 
@@ -55,37 +54,37 @@ class Grouping : public Expr
 public:
     std::shared_ptr<Expr> expression;
 
-    Grouping(std::shared_ptr<Expr> expression)
-        : expression(expression) {}
+    Grouping(std::shared_ptr<Expr> expression) : expression(expression) {}
+
     std::variant<std::monostate, double, bool, std::string> accept(Visitor *visitor) override
     {
-        visitor->visitGroupingExpr(this);
+        return visitor->visitGroupingExpr(this);
     }
 };
 
 class Literal : public Expr
 {
 public:
-    std::variant<std::monostate, std::string, double,bool> value;
+    std::variant<std::monostate, std::string, double, bool> value;
 
     Literal(std::variant<std::monostate, std::string, double, bool> value) : value(value) {}
 
     std::variant<std::monostate, double, bool, std::string> accept(Visitor *visitor) override
     {
-        visitor->visitLiteralExpr(this);
+        return visitor->visitLiteralExpr(this);
     }
 };
 
 class Unary : public Expr
 {
+public:
     Token op;
     std::shared_ptr<Expr> right;
 
-    Unary(std::shared_ptr<Expr> right, Token op) : right(right),
-                                                   op(op) {}
+    Unary(Token op, std::shared_ptr<Expr> right) : op(op), right(right) {}
 
     std::variant<std::monostate, double, bool, std::string> accept(Visitor *visitor) override
     {
-        visitor->visitUnaryExpr(this);
+        return visitor->visitUnaryExpr(this);
     }
 };

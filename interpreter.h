@@ -16,7 +16,7 @@ private:
     std::variant<std::monostate, double, bool, std::string> evaluateBinaryExpr(const Binary *expr);
     std::variant<std::monostate, double, bool, std::string> evaluateGroupingExpr(const Grouping *expr); // within parenthesis
     std::variant<std::monostate, double, bool, std::string> evaluateLiteralExpr(const Literal *expr);
-    std::variant<std::monostate, double, bool, std::string> evaluateUnaryExpr(const Unary *expr);
+    std::variant<std::monostate, double, bool, std::string> evaluateUnaryExpr(const Unary &expr);
 
     template <typename T>
     double evaluateNumberLiteral(const T &value);
