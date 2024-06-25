@@ -13,23 +13,17 @@ public:
     void interpret(const std::vector<std::shared_ptr<Expr>> &expressions);
 
 private:
-    std::variant<std::monostate, double, bool, std::string> evaluateBinaryExpr(const Binary *expr);
-    std::variant<std::monostate, double, bool, std::string> evaluateGroupingExpr(const Grouping *expr); // within parenthesis
-    std::variant<std::monostate, double, bool, std::string> evaluateLiteralExpr(const Literal *expr);
-    std::variant<std::monostate, double, bool, std::string> evaluateUnaryExpr(const Unary &expr);
+    std::variant<std::monostate, double, bool, std::string> visitBinaryExpr(Binary *expr) override;
+    std::variant<std::monostate, double, bool, std::string> visitGroupingExpr(Grouping *expr) override;
+    std::variant<std::monostate, double, bool, std::string> visitLiteralExpr(Literal *expr) override;
+    std::variant<std::monostate, double, bool, std::string> visitUnaryExpr(Unary *expr) override;
 
-    template <typename T>
-    double evaluateNumberLiteral(const T &value);
+    bool isTruthy(const std::variant<std::monostate, double, bool, std::string> &value);
+    bool isEqual(const std::variant<std::monostate, double, bool, std::string> &left, const std::variant<std::monostate, double, bool, std::string> &right);
 
-    template <typename T>
-    std::string evaluateStringLiteral(const T &value);
-
-    template <typename T>
-    bool evaluateBooleanLiteral(const T &value);
-
-    void checkNumberOperand(const Token &op, const std::variant<std::monostate, bool, double, std::string> &operand);
-    void checkNumberOperands(const Token&op, const std::variant<std::monostate, double, bool, std::string>& left, const std::variant<std::monostate, double, bool, std::string>& right);
-    void runTimeError(const Token& op, const std::string & message);
+    void checkNumberOperand(const Token &op, const std::variant<std::monostate, double, bool, std::string> &operand);
+    void checkNumberOperands(const Token &op, const std::variant<std::monostate, double, bool, std::string> &left, const std::variant<std::monostate, double, bool, std::string> &right);
+    void runtimeError(const Token &op, const std::string &message);
 
     std::variant<std::monostate, double, bool, std::string> m_value;
 };

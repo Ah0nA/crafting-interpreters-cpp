@@ -65,9 +65,9 @@ public:
 class Literal : public Expr
 {
 public:
-    std::variant<std::monostate, std::string, double, bool> value;
+    std::variant<std::monostate, double, bool, std::string> value;
 
-    Literal(std::variant<std::monostate, std::string, double, bool> value) : value(value) {}
+    Literal(std::variant<std::monostate, double, bool, std::string> value) : value(value) {}
 
     std::variant<std::monostate, double, bool, std::string> accept(Visitor *visitor) override
     {
