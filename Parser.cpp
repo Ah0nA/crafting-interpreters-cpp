@@ -220,14 +220,50 @@ std::shared_ptr<Expr> Parser::primary()
     throw ParseError(reportError(peek(), "Unexpected Token"));
 }
 
-std::shared_ptr<Expr> Parser::parse()
+
+std::shared_ptr<Stmt> Parser::statement()
 {
-    try
+    if (match({TokenType::PRINT}))
     {
-        return expression();
+        return printStatement();
     }
-    catch (ParseError &error)
-    {
-        return nullptr;
-    }
+    return expressionStatement();
 }
+
+std::vector<std::shared_ptr<Stmt>> Parser::parser()
+{
+    std::vector<std::shared_ptr<Stmt>> statements;
+
+    while (!isAtEnd())
+    {
+        statements.push_back(statement());
+    }
+
+    return statements;
+}
+std::shared_ptr<Stmt> Parser::printStatement(){
+    std::shared_ptr<Expr> value = expression();
+    consume(TokenType::SEMICOLON, "Expect ';' after value");
+    return std::make_shared<Print> (value);
+
+}
+std::shared_ptr<Stmt> Parser::expressionStatement(){
+    std::shared_ptr<Expr> expr = expression();
+    consume(TokenType::SEMICOLON, "Expect ';' after value");
+    return std::make_shared<Print> (expr);
+
+}
+
+
+
+// std::shared_ptr<Expr> Parser::parse()
+// {
+//     try
+//     {
+//         return expression();
+//     }
+//     catch (ParseError &error)
+//     {
+//         return nullptr;
+//     }
+// }

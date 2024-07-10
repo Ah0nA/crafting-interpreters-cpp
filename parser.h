@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Tokentype.h>
+#include "build/Stmt.h"
 #include <Token.h>
 #include <Expr.h>
 #include <vector>
@@ -16,6 +17,7 @@ public:
     Parser(const std::vector<Token> &tokens);
 
 private:
+private:
     std::shared_ptr<Expr> expression();
     std::shared_ptr<Expr> equality();
     bool match(const std::vector<TokenType> &types);
@@ -24,10 +26,13 @@ private:
     bool isAtEnd();
     Token peek();
     Token previous();
-    void Parser::synchronize();
-    std::shared_ptr<Expr> Parser::parse();
-    Token Parser::consume(TokenType type, const std::string &message);
-    std::string Parser::reportError(const Token& token, const std::string& message);
+    void synchronize();
+    std::shared_ptr<Stmt> printStatement();
+    std::vector<std::shared_ptr<Stmt>> Parser::parser();
+    std::shared_ptr<Stmt> statement();
+    std::shared_ptr<Stmt> expressionStatement();
+    Token consume(TokenType type, const std::string &message);
+    std::string reportError(const Token &token, const std::string &message);
     std::shared_ptr<Expr> comparision();
     std::shared_ptr<Expr> term();
     std::shared_ptr<Expr> factor();
